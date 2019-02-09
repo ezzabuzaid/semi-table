@@ -2,5 +2,42 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
-  "projects": {}
+  "projects": {
+    "semi-table": {
+      "root": "projects/semi-table",
+      "sourceRoot": "projects/semi-table/src",
+      "projectType": "library",
+      "prefix": "semi",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/semi-table/tsconfig.lib.json",
+            "project": "projects/semi-table/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/semi-table/src/test.ts",
+            "tsConfig": "projects/semi-table/tsconfig.spec.json",
+            "karmaConfig": "projects/semi-table/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/semi-table/tsconfig.lib.json",
+              "projects/semi-table/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "semi-table"
 }
