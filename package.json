@@ -1,5 +1,20 @@
 {
   "name": "angular-libraries",
+  "author": {
+    "email": "ezzabuzaid@hotmail.com",
+    "name": "ezzabuzaid"
+  },
+  "repository": "ezzabuzaid/semi-table",
+  "keywords": [
+    "table",
+    "data grid",
+    "angular table",
+    "semi",
+    "semi table",
+    "semi plugins"
+  ],
+  "license": "MIT",
+  "description": "Angular table",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
