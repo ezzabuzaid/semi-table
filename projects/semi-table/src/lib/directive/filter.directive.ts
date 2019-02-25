@@ -6,7 +6,6 @@ import { TableService } from '../table.service';
 })
 
 export class TableFilterDirective implements OnInit {
-  lastDataSource = [];
   keys: string[] = [];
   @Input() set semiTableFilter(keys: string[]) {
     this.keys = keys;
@@ -17,41 +16,66 @@ export class TableFilterDirective implements OnInit {
 
   _dataSource = [];
   get dataSource() {
-    const data = this.tableService.dataSource;
-    if (!this.lastDataSource.length) {
-      this.lastDataSource = data;
-    }
-    return data;
+    // const data = this.tableService.dataSource;
+    // return data;
+    return this._dataSource;
   }
   set dataSource(data) {
-    this.tableService.dataSource = data;
+    // this.tableService.dataSource = data;
+    this._dataSource = data;
   }
 
-  ngOnInit() { }
+  get lastDataSource() {
+    return this.tableService.lastData;
+  }
+
+  set lastDataSource(data) {
+    this.tableService.lastData = data;
+  }
+
+  ngOnInit() {
+
+    this.tableService
+      .castData()
+      .pipe(
+        // takeUntil(this._unsubscribe),
+        // startWith(this.dataSource),
+        // pairwise()
+      )
+      .subscribe(
+        // ([prev, latest])
+        data => {
+          this.dataSource = data;
+          // this.lastDataSource = prev;
+        });
+  }
 
   @HostListener('input', ['$event']) filter({ target }) {
-    let data = [...this.dataSource];
-    const filterData = [];
     const value = String(target.value).toLowerCase();
-    if (value.length && data.length) {
-      for (const key of this.keys) {
-        const sorted = data.filter(el => {
-          const dataValue = this.getValue(key, el);
-          const dataType = typeof dataValue;
-          if (dataType === 'string' || dataType === 'number') {
-            const keyValue = String(dataValue).toLowerCase();
-            return keyValue.indexOf(value) !== -1;
-          }
-          return false;
-        });
-        filterData.push(...sorted);
-      }
-      data = [...new Set(filterData)];
-      this.tableService.nextData(data);
-    } else {
-      this.tableService.nextData(this.lastDataSource);
-      this.lastDataSource = [];
-    }
+    this.tableService.search({
+      keys: this.keys,
+      token: value
+    });
+    // if (value.length && this.dataSource.length) {
+    //   const filterdData = [];
+    //   for (const key of this.keys) {
+    //     const sorted = this.dataSource.filter(el => {
+    //       const dataValue = this.getValue(key, el);
+    //       const dataType = typeof dataValue;
+    //       if (dataType === 'string' || dataType === 'number') {
+    //         const keyValue = String(dataValue).toLowerCase();
+    //         return keyValue.indexOf(value) !== -1;
+    //       }
+    //       return false;
+    //     });
+    //     filterdData.push(...sorted);
+    //   }
+    //   const data = [...new Set(filterdData)];
+    //   this.tableService.nextData(data);
+    // } else {
+    //   this.tableService.nextData(this.lastDataSource);
+    //   console.log('lastDataSource:: ', this.lastDataSource);
+    // }
   }
 
   getValue(name, obj) {

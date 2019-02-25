@@ -20,7 +20,8 @@ Container for data
 > `<semi-table></semi-table>`
 ##### inputs
 `dataSource` your data source e.g:: [{id:1, name: 'semi'}]
-`classed` class to applied to table element directly
+
+`classes` class to applied to table element directly
 
 Table header, just a wrapper around the `<th>` and has no effect
 > `<semi-table-head></semi-table-head>`
@@ -33,7 +34,7 @@ this put in first column after the first header row, typicaly don't use this wit
 and this required to put `th` in the first row, you'll need this column for action tools or checkbox ...etc 
 please see the demo for more details
 
-[Demo](https://angular-5n8nfc.stackblitz.io) is here
+[Demo](https://stackblitz.com/edit/angular-5n8nfc) is here
 
 #### better documentation will be available soon, "sorry for that"
 

@@ -3,7 +3,7 @@
     <tr>
       <ng-content select="semi-table-head"></ng-content>
     </tr>
-    <tr>
+    <tr *ngIf="actionsComponent || columns.length">
       <ng-container *ngIf="actionsComponent && actionsComponent?.position === 'start'">
         <th>
           <ng-content select="semi-table-actions"></ng-content>

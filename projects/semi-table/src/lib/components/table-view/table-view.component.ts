@@ -37,10 +37,10 @@ export class SemiTableComponent implements OnInit, AfterContentInit, OnDestroy {
   @ContentChild(TableActionsComponent, { read: TableActionsComponent }) actionsComponent: TableActionsComponent;
 
   @Input('dataSource')
-  set $dataSource(data: any[]) {
-    this.tableService.dataSource = data;
-    this._dataSource = data;
-  }
+  // set $dataSource(data: any[]) {
+  //   this.tableService.dataSource = data;
+  //   this._dataSource = data;
+  // }
 
   set dataSource(data) {
     this.tableService.dataSource = data;
@@ -61,23 +61,38 @@ export class SemiTableComponent implements OnInit, AfterContentInit, OnDestroy {
     private tableService: TableService,
   ) { }
 
+
+  set lastDataSource(data) {
+    this.tableService.lastData = data;
+  }
+
   ngOnInit() {
     this.tableService
       .castData()
-      .pipe(takeUntil(this._unsubscribe))
-      .subscribe(data => {
-        this.dataSource = data;
-        console.log(data);
+      .pipe(
+        takeUntil(this._unsubscribe),
+        // startWith(this.dataSource),
+        // pairwise()
+      )
+      .subscribe(([prev, latest]) => {
+        this.dataSource = latest;
+        this.lastDataSource = prev;
+      });
+
+    this.tableService.onSearch()
+      .subscribe(token => {
+        console.log('token', token);
       });
   }
 
   ngAfterContentInit() {
     this.locked = true;
-    console.log(this.columns, this.actionsComponent);
-    if (this.actionsComponent.position === 'start') {
-      this.columns.shift();
-    } else {
-      // this.columns.pop();
+    if (this.actionsComponent) {
+      if (this.actionsComponent.position === 'start') {
+        this.columns.shift();
+      } else {
+        // this.columns.pop();
+      }
     }
   }
 
@@ -89,6 +104,30 @@ export class SemiTableComponent implements OnInit, AfterContentInit, OnDestroy {
   ngOnDestroy() {
     this._unsubscribe.next();
     this._unsubscribe.complete();
+  }
+
+  search(value, keys) {
+    if (value.length && this.dataSource.length) {
+      const filterdData = [];
+      for (const key of keys) {
+        const sorted = this.dataSource.filter(el => {
+          const dataValue = this.getValue(key, el);
+          const dataType = typeof dataValue;
+          if (dataType === 'string' || dataType === 'number') {
+            const keyValue = String(dataValue).toLowerCase();
+            return keyValue.indexOf(value) !== -1;
+          }
+          return false;
+        });
+        filterdData.push(...sorted);
+      }
+      const data = [...new Set(filterdData)];
+      this.tableService.nextData(data);
+    }
+  }
+
+  getValue(name, obj) {
+    return name.split('.').reduce((a, v) => a[v], obj);
   }
 
 }
